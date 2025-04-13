@@ -1,25 +1,24 @@
-## main.py
-## API Server code for model serving
-
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from pydantic import BaseModel
 import joblib
+import numpy as np
 
-# Load the pre-trained model
+# ✅ Define the FastAPI app before using it
+app = FastAPI()
+
+# ✅ Load your trained model
 model = joblib.load("model.pkl")
 
-# Define the input schema
-class Features(BaseModel):
-    features: list[float]
+# ✅ Define a request body model
+class InputData(BaseModel):
+    features: list
 
 @app.get("/")
 def read_root():
-    return {"message": "Model API is live!"}
+    return {"message": "ML Model API is up!"}
 
 @app.post("/predict")
-def predict(data: Features):
-    try:
-        prediction = model.predict([data.features])
-        return {"prediction": prediction.tolist()}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+def predict(data: InputData):
+    features = np.array(data.features).reshape(1, -1)
+    prediction = model.predict(features)
+    return {"prediction": prediction.tolist()}
