@@ -1,0 +1,6 @@
+# File: app/requirements.txt
+fastapi
+uvicorn
+scikit-learn
+joblib
+pydantic
